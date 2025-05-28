@@ -1,5 +1,5 @@
-import todoStore from '../store/todo.store';
-import { renderTodos } from '../user-cases';
+import todoStore, { Filters } from '../store/todo.store';
+import { renderTodos , renderPending } from '../user-cases';
 import html from './app.html?raw'
 
 // local storage es persistente a lo largo q viva la aplicacion
@@ -8,6 +8,9 @@ import html from './app.html?raw'
 const ElementIds = {
   TodoList: ".todo-list",
   NewTodoInput: "#new-todo-input",
+  ClearCompleted : '.clear-completed',
+  TodoFilters : '.filtro',
+  PendingCountLabel : '#pending-count',
 };
 
 /**
@@ -20,6 +23,11 @@ export const App = ( elementid )=>{
   const displayTodos = () => {
     const todos = todoStore.getTodos(todoStore.getCurrentFilter());
     renderTodos(ElementIds.TodoList, todos);
+    updatePendingCount();
+  };
+
+  const updatePendingCount = () =>{
+    renderPending( ElementIds.PendingCountLabel );
   };
 
 
@@ -38,6 +46,8 @@ export const App = ( elementid )=>{
 
   const newDescriptionInput = document.querySelector( ElementIds.NewTodoInput);
   const todoListUL = document.querySelector( ElementIds.TodoList );
+  const clearCompleted = document.querySelector( ElementIds.ClearCompleted );
+  const filtersLI = document.querySelectorAll( ElementIds.TodoFilters);
 
   //listeners
 
@@ -68,6 +78,35 @@ export const App = ( elementid )=>{
     displayTodos();
   });
 
+  clearCompleted.addEventListener('click', ()=>{
+    todoStore.deleteCompleted();
+    displayTodos();
+  });
+
+  filtersLI.forEach(element => {
+    element.addEventListener('click', (element) =>{
+      filtersLI.forEach( el =>el.classList.remove("selected"));
+      element.target.classList.add('selected');
+      console.log(element.target.text.length);
+
+      switch( element.target.text){
+        case 'Todos':
+          todoStore.setFilter( Filters.All );
+          break;
+
+        case 'Pendientes':
+          todoStore.setFilter( Filters.Pending );
+          break;
+
+        case 'Completados':
+          todoStore.setFilter( Filters.Completed );
+          break;
+      }
+
+      displayTodos();
+    });
+
+  });
 
 
 

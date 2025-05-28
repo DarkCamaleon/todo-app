@@ -1,7 +1,7 @@
 import { Todo } from "../models/todo.model"
 
 
-const Filters = {
+export const Filters = {
   All : 'All',
   Completed : 'Completed',
   Pending : 'Pending',
@@ -53,6 +53,8 @@ const saveStateToLocalStore = () =>{
 
 // JSON.parse → convierte JSON (string) → JavaScript.
 
+// cookies
+
 const getTodos = ( filter = Filters.All) =>{
 
   switch ( filter ){
@@ -93,7 +95,7 @@ const deleteTodo = ( todoId ) => {
 };
 
 const deleteCompleted = ()=>{
-  state.todos = state.todos.filter((todo) => todo.done);
+  state.todos = state.todos.filter((todo) => !todo.done);
   saveStateToLocalStore();
 }
 
